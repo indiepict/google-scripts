@@ -1,0 +1,22 @@
+function replaceTextWithLink() {
+  var doc = DocumentApp.getActiveDocument();
+  var body = doc.getBody();
+  var links = new Set();
+  var ss = SpreadsheetApp.openById("SPREADSHEET_ID"); // Replace with the ID of your spreadsheet
+  var sheet = ss.getSheets()[0]; // Use the first sheet in the spreadsheet
+  var data = sheet.getDataRange().getValues();
+  for (var i = 0; i < data.length; i++) {
+    var key = data[i][0]; // Assumes the search phrase is in the first column
+    var value = data[i][1]; // Assumes the link is in the second column
+    var searchResult = body.findText(key);
+    while (searchResult !== null) {
+      var start = searchResult.getStartOffset();
+      var end = searchResult.getEndOffsetInclusive();
+      if(!links.has(value)) {
+        links.add(value);
+        var link = searchResult.getElement().asText().setLinkUrl(start, end, value);
+      }
+      searchResult = body.findText(key, searchResult);
+    }
+  }
+}
