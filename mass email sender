@@ -1,0 +1,60 @@
+function sendEmails() {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var startRow = 2;  // First row of data to process
+  var numRows = sheet.getLastRow()-1;   // Number of rows to process
+  var dataRange = sheet.getRange(startRow, 1, numRows, 10); // Fetch the range of cells A2:J
+  var data = dataRange.getValues();
+  for (var i = 0; i < data.length; ++i) {
+    var row = data[i];
+    var email = row[0];  // First column
+    var name = row[1]; // Second column
+    var var1 = row[2]; // Third column
+    var var2 = row[3]; // Fourth column
+    var var3 = row[4]; // Fifth column
+    var subject1 = row[5];  // Sixth column
+    var subject2 = row[6];  // Seventh column
+    var subject3 = row[7];  // Eighth column
+    var sent1 = row[8];  // Ninth column
+    var sent2 = row[9];  // Tenth column
+    var sent3 = row[10];  // Eleventh column
+    if (email == "") {
+      continue;
+    }
+    if (sent1 == "") {
+      var subject = subject1;
+      var emailBody = getEmailBody(1, name, var1, var2, var3);
+      MailApp.sendEmail(email, subject, emailBody);
+      sheet.getRange(startRow + i, 9).setValue(new Date());
+    } else if (sent2 == "") {
+      var subject = subject2;
+      var emailBody = getEmailBody(2, name, var1, var2, var3);
+      MailApp.sendEmail(email, subject, emailBody);
+      sheet.getRange(startRow + i, 10).setValue(new Date());
+    } else if (sent3 == "") {
+      var subject = subject3;
+      var emailBody = getEmailBody(3, name, var1, var2, var3);
+      MailApp.sendEmail(email, subject, emailBody);
+      sheet.getRange(startRow + i, 11).setValue(new Date());
+    }
+  }
+}
+
+function getEmailBody(emailNumber, name, var1, var2, var3) {
+  var docId;
+  if (emailNumber == 1) {
+    docId = "1_p0Zf3ggLc1_4sOuMkjUx-52ashm0HTArWmPdPnS6DM"; //replace docId
+  } else if (emailNumber == 2) {
+    docId = "1LVxIFeCCB1j01aoYoHysI-dK3I2LFILVhgz0JgtSJK8"; //replace docId
+  } else {
+    docId = "19oLhxmgjMgJwXMnMJxSclXva6WzFIO1_yteHGLgXirA"; //replace docId
+  }
+  var body = DocumentApp.openById(docId).getBody().getText();
+  body = body.replace("{name}", name);
+  if (var1) {
+  body = body.replace("{var1}", var1);}
+  if (var2) {
+  body = body.replace("{var2}", var2);}
+  if (var3) {
+  body = body.replace("{var3}", var3);}
+  return body;
+  }
